@@ -1,0 +1,27 @@
+# Python dependencies for 01_qc.ipynb through 05_malignant_normal_classification.ipynb.
+# Tested against Python 3.13 / scanpy 1.12.4 / anndata 0.13.4 in the environment this
+# repository was prepared in; any reasonably recent version of each package should work.
+#
+# scanpy's "seurat_v3" highly-variable-gene method (used in 02_normalization_clustering.ipynb)
+# requires scikit-misc, and sc.tl.leiden requires leidenalg (+ igraph) -- both are listed
+# below even though scanpy does not always pull them in automatically.
+
+jupyter
+numpy
+pandas
+scipy
+anndata
+scanpy>=1.9
+scikit-misc
+leidenalg
+igraph
+scrublet
+matplotlib
+seaborn
+
+# --- Notebook 6 only (06_pseudobulk_deseq2.ipynb) ---
+# rpy2 bridges to R/Bioconductor for the DESeq2 differential-expression call.
+# This is a Python package but it is USELESS without a working R installation plus the
+# Bioconductor DESeq2 package (apeglm is optional, used for log-fold-change shrinkage if
+# installed). See README.md for the R-side setup -- it is not pip-installable.
+rpy2
