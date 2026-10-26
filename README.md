@@ -10,14 +10,7 @@ pseudobulk differential-expression test.
 
 ## Layout
 
-The six notebooks live directly in this folder (`gitHub/`) and expect `data/` and
-`results/` as **siblings of this folder** -- i.e. one level up, matching how the main
-project is laid out (`.../MM_Progression/{gitHub, data, results, ...}`). Every notebook's
-second code cell sets `PROJECT = Path("../")`, so it resolves to that project root and
-reads/writes `PROJECT / "data" / ...` and `PROJECT / "results" / ...` there, not inside
-`gitHub/` itself. If you move this folder out on its own (e.g. publishing it as a
-standalone repository), create `data/` and `results/` as its siblings, matching this same
-layout.
+The six notebooks live directly here.
 
 ## Data
 
@@ -32,16 +25,11 @@ data/raw/GSE193531/GSE193531_cell-level-metadata.csv
 ```
 
 `GSE193531_umi-count-matrix.csv` has genes as rows and cells as columns, with count
-values written as floats (`"0.0"`, not `"0"`). `GSE193531_cell-level-metadata.csv` must
+values written as floats (`"0.0"`). `GSE193531_cell-level-metadata.csv` must
 contain, at minimum, an `index` column (cell ID matching the count matrix's column
 names), `sample_ID`, `disease_stage` (values `NBM`/`MGUS`/`SMM`/`MM`), and
 `normal_or_neoplastic` (the original study's own per-cell malignant/normal call, used by
 notebook 5).
-
-Processed `.h5ad` objects produced by each notebook land under `data/processed/GSE193531/`
-(one level up) and are not checked into this repository -- they range from roughly 300 MB
-to 700 MB for this cohort and regenerate in minutes to tens of minutes when the notebooks
-are run.
 
 ## Pipeline
 
@@ -56,60 +44,11 @@ Run in order (each notebook reads the previous one's output):
 | 5 | `05_malignant_normal_classification.ipynb` | `..._plasma_cells_classified.h5ad` -- per-cell malignant/normal label (re-attached from the original study, kappa/lambda-checked) |
 | 6 | `06_pseudobulk_deseq2.ipynb` | `results/GSE193531/pseudobulk_deg/GSE193531_healthy_vs_mm_deseq2_results.csv` -- patient-level Healthy-vs-MM pseudobulk DEG table |
 
-Open each in Jupyter (or run with `jupyter nbconvert --to notebook --execute <name>.ipynb`)
-and run top to bottom, in order, from a kernel whose working directory is this `gitHub/`
+Open each in Jupyter and run top to bottom, in order, from a kernel whose working directory is this `gitHub/`
 folder. Each notebook creates its own output directories under `data/processed/GSE193531/`
 and `results/GSE193531/` and raises a clear `FileNotFoundError` if the previous notebook's
 output is missing.
 
-### Two steps involve a documented manual-review decision, not a mechanical computation
-
-Leiden cluster numbering is not reproducible across runs (it depends on the exact
-software versions and random seed in your environment). Two notebooks in this pipeline
-make a judgment call about specific cluster numbers, and both ship with a conservative,
-clearly-marked default that you should review and edit against your own run's printed
-evidence rather than trust blindly:
-
-- **`02_normalization_clustering.ipynb`** -- flagging non-plasma contaminant / QC-caution
-  clusters (`MYELOID_CLUSTERS`, `B_CELL_CLUSTERS`, `QC_CAUTION_CLUSTERS`, in the "Cluster
-  Classification" cell). Default: nothing flagged. This label (`cell_type_candidate`) is a
-  supplementary sanity check used by notebook 3, not a hard input to any later computation.
-- **`04_plasma_cell_identity.ipynb`** -- assigning each Leiden cluster as Plasma-like /
-  Non-plasma / Ambiguous (`PLASMA_LIKE_CLUSTERS` / `NON_PLASMA_CLUSTERS` /
-  `AMBIGUOUS_CLUSTERS`). Default: clusters already labeled `Plasma_cell` by notebook 3 are
-  plasma-like; everything else is Ambiguous (excluded). This one **does** determine which
-  cells reach every later step, so review the printed per-cluster marker evidence (tables
-  and dotplot, in the notebook) before trusting it.
-
-## R / DESeq2 setup (notebook 6 only)
-
-`06_pseudobulk_deseq2.ipynb` calls Bioconductor's DESeq2 from Python via `rpy2`. This
-needs, separately from `requirements.txt`:
-
-1. A working R installation.
-2. Bioconductor's `DESeq2` package:
-   ```r
-   if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-   BiocManager::install("DESeq2")
-   ```
-3. Optionally, `apeglm` (used for log-fold-change shrinkage if present; the notebook falls
-   back to the unshrunken DESeq2 estimate if it isn't installed):
-   ```r
-   BiocManager::install("apeglm")
-   ```
-4. `pip install rpy2` (already in `requirements.txt`), with `rpy2` able to find your R
-   installation (usually automatic if `R` is on your `PATH`).
-
-**Note on notebook 6's testing status:** this notebook is a direct port of the project's
-own DESeq2 notebook. Notebooks 1-5 of this pipeline were executed end-to-end, top to
-bottom, against a synthetic dataset while preparing this repository (confirming the
-`data`/`results` path layout and every step's logic) and ran without error. Notebook 6's
-pseudobulk construction and gene-filtering cells were verified the same way, chained
-directly off notebooks 1-5's real output. The DESeq2/`rpy2` cell itself could not be
-executed in the environment this repository was prepared in (no R installation available
-there) -- the original project notebook carries the same caveat for the same reason. Run
-it once carefully in your own environment and check the output against DESeq2's documented
-interface before trusting it for anything downstream.
 
 ## Method summary
 
@@ -135,6 +74,5 @@ DESeq2, comparing each Healthy patient's `Normal`-labeled cells against each MM 
 
 Code extracted and adapted, for minimal release, from the analysis pipeline behind
 "A multicompartment single-cell molecular signature associated with the multiple myeloma
-disease continuum." Raw sequencing data is third-party (GEO accession GSE193531) and is
-not redistributed here.
-# Single-Cell-RNA-Seq-to-Pseudobulk
+disease continuum." Raw sequencing data is GEO accession GSE193531.
+
