@@ -1,17 +1,12 @@
 # GSE193531 single-cohort pipeline
 
-A minimal, executable, single-cohort extract of one cohort's analysis pipeline from the
-multiple myeloma disease-continuum signature project. The cohort was selected at random
-from the project's three cohorts (GSE193531, GSE124310, GSE271107) for this release.
+An executable, single-cohort extract of analysis pipeline from the
+multiple myeloma disease-continuum signature project (GSE193531).
 
-This repository covers one cohort's **within-cohort** pipeline only: raw count matrix to
+This repository covers: raw count matrix to
 cell-level QC, normalization/clustering, cell-type annotation, plasma-cell identity
 confirmation, malignant/normal classification, and the patient-level Healthy-vs-MM
-pseudobulk differential-expression test. It stops there. It does **not** include the
-project's downstream, cross-cohort steps (concordance analysis across cohorts, the fixed
-51-gene candidate signature, continuum/stage characterization, or pathway attribution) --
-those combine this cohort with the other two and are out of scope for a single-cohort
-release.
+pseudobulk differential-expression test.
 
 ## Layout
 
